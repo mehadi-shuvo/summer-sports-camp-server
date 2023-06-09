@@ -29,6 +29,7 @@ const client = new MongoClient(uri, {
 });
 
 const userCollection = client.db('summerCamp').collection('users');
+const classCollection = client.db('summerCamp').collection('class');
 
 async function run() {
   try {
@@ -54,6 +55,7 @@ async function run() {
         res.send(result);
     })
 
+    // get user role
     app.get('/user/role/:email', async (req, res)=>{
       const email = req.params.email;
       //todo jwt;
@@ -92,6 +94,18 @@ async function run() {
       const result = await userCollection.updateOne(filter, updateDoc);
       res.send(result);
 
+    })
+
+    //class api;
+    app.get('/class', async(req, res)=>{
+      const result = await classCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.post('/class', async (req, res)=>{
+      const newClass = req.body;
+      const result = await classCollection.insertOne(newClass);
+      res.send(result);
     })
 
 
