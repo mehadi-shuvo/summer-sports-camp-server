@@ -54,6 +54,16 @@ async function run() {
         res.send(result);
     })
 
+    app.get('/user/role/:email', async (req, res)=>{
+      const email = req.params.email;
+      //todo jwt;
+      const query = {email: email};
+      const user = await userCollection.findOne(query);
+      const result = { userRole: user?.role}
+      res.send(result);
+
+    })
+
     //create admin api
     app.patch('/users/admin/:id', async (req, res)=>{
       const id = req.params.id;
