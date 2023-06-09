@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 const app = express();
@@ -34,6 +35,12 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    //jwt token collect;
+    app.post('/jwt', (req, res)=>{
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_USER_TOKEN, { expiresIn: '2h' });
+      res.send({token})
+    })
 
     //user collection;
     app.get('/users', async (req, res) => {
