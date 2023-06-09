@@ -82,6 +82,7 @@ async function run() {
     })
 
     //create instructor api
+    
     app.patch('/users/instructor/:id', async (req, res)=>{
       const id = req.params.id;
       const filter = {_id : new ObjectId(id)}
@@ -101,6 +102,14 @@ async function run() {
       const result = await classCollection.find().toArray();
       res.send(result);
     })
+
+    app.get('/class/instructor/:email', async (req, res)=>{
+      const email = req.params.email;
+      const query = {email: email};
+      const result = await classCollection.find(query).toArray();
+      res.send(result);
+    })
+
 
     app.post('/class', async (req, res)=>{
       const newClass = req.body;
