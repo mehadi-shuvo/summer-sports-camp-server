@@ -48,6 +48,12 @@ async function run() {
         const result = await userCollection.find().toArray()
         res.send(result);
       })
+    app.get('/users/role/:role', async (req, res) => {
+      const role = req.params.role;
+      const query = {role: role}
+        const result = await userCollection.find(query).toArray()
+        res.send(result);
+      })
 
     app.post('/users', async (req, res)=>{
         const newUser = req.body;
