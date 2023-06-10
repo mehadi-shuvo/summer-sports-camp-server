@@ -137,9 +137,9 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const classItem = await classCollection.findOne(query)
-      const {seats} = classItem
+      const {seats, enrolled} = classItem
       const updateSeats = seats -1;
-      const result = await classCollection.findOneAndUpdate(query, { $set: { seats:  updateSeats} }, { returnOriginal: false })
+      const result = await classCollection.findOneAndUpdate(query, { $set: { seats:  updateSeats, enrolled: enrolled + 1} }, { returnOriginal: false })
       res.send(result);
 
     })
@@ -179,6 +179,14 @@ async function run() {
       const result = await myClassedCollection.deleteOne(query);
       res.send(result);
     });
+
+    // enrolled class;
+    app.get('/enroll/:email', async (req, res)=>{
+      const email = req.params.email;
+      const query = {email: email};
+      const result = await paymentsCollection.find(query).toArray();
+      res.send(result);
+    })
 
 
 
