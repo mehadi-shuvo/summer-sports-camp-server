@@ -133,6 +133,16 @@ async function run() {
       res.send(result);
 
     })
+    app.put('/class/seats/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const classItem = await classCollection.findOne(query)
+      const {seats} = classItem
+      const updateSeats = seats -1;
+      const result = await classCollection.findOneAndUpdate(query, { $set: { seats:  updateSeats} }, { returnOriginal: false })
+      res.send(result);
+
+    })
     app.put('/class/deny/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
@@ -154,7 +164,6 @@ async function run() {
       const id = req.params.id;
       const query = { classId: id }
       const result = await myClassedCollection.findOne(query);
-      console.log(result);
       res.send(result);
     })
 
