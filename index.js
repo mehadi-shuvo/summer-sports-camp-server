@@ -30,6 +30,7 @@ const client = new MongoClient(uri, {
 
 const userCollection = client.db('summerCamp').collection('users');
 const classCollection = client.db('summerCamp').collection('class');
+const myClassedCollection = client.db('summerCamp').collection('mayClasses');
 
 async function run() {
   try {
@@ -137,6 +138,19 @@ async function run() {
       res.send(result);
       
     })
+
+    //my classes
+
+    app.get('/myClasses', async(req, res)=>{
+      const result = await myClassedCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.post('/myClasses', async (req, res)=>{
+      const newClass = req.body;
+      const result = await myClassedCollection.insertOne(newClass);
+      res.send(result);
+    });
 
 
 
