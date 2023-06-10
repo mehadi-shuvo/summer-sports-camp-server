@@ -141,14 +141,22 @@ async function run() {
 
     //my classes
 
-    app.get('/myClasses', async(req, res)=>{
-      const result = await myClassedCollection.find().toArray();
+    app.get('/myClasses/:email', async(req, res)=>{
+      const email = req.params.email;
+      const query = {email: email}
+      const result = await myClassedCollection.find(query).toArray();
       res.send(result);
     })
 
     app.post('/myClasses', async (req, res)=>{
       const newClass = req.body;
       const result = await myClassedCollection.insertOne(newClass);
+      res.send(result);
+    });
+    app.delete('/myClasses/:id', async (req, res)=>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result = await myClassedCollection.deleteOne(query);
       res.send(result);
     });
 
