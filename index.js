@@ -121,6 +121,21 @@ async function run() {
       const newClass = req.body;
       const result = await classCollection.insertOne(newClass);
       res.send(result);
+    });
+
+    app.put('/class/approve/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result = await classCollection.findOneAndUpdate(query, {$set:{status: 'approved'}}, {returnOriginal: false})
+      res.send(result);
+      
+    })
+    app.put('/class/deny/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result = await classCollection.findOneAndUpdate(query, {$set:{status: 'denied'}}, {returnOriginal: false})
+      res.send(result);
+      
     })
 
 
