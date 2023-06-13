@@ -10,6 +10,22 @@ const port = process.env.PORT || 3000;
 //middle wire 
 app.use(cors())
 app.use(express.json())
+//jwt middle wire
+const verifyJWT = (req, res, next) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    return res.status(401).send({ error: true, message: 'unauthorized access' });
+  }
+  const token = authorization.split(' ')[1];
+  jwt.verify(token, process.env.ACCESS_USER_TOKEN, (error, decoded) => {
+    if (error) {
+      return res.status(403).send({ error: true, message: 'unauthorized access' });
+    }
+    req.decoded = decoded;
+    next();
+  })
+}
+
 
 
 //==================================
@@ -39,6 +55,17 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email }
+      const user = await userCollection.findOne(query);
+      if (user?.role !== 'admin') {
+        return res.status(403).send({ error: true, message: 'forbidden message' })
+
+      }
+      next();
+    }
+
     //jwt token collect;
     app.post('/jwt', (req, res) => {
       const user = req.body;
@@ -47,7 +74,7 @@ async function run() {
     })
 
     //user collection;
-    app.get('/users', async (req, res) => {
+    app.get('/users',verifyJWT,verifyAdmin, async (req, res) => {
       const result = await userCollection.find().toArray()
       res.send(result);
     })
@@ -60,7 +87,13 @@ async function run() {
 
     app.post('/users', async (req, res) => {
       const newUser = req.body;
-      const result = await userCollection.insertOne(newUser);
+
+      const query = {email: newUser.email};
+      const existingUser = await userCollection.findOne(query);
+      if(existingUser){
+        return res.send({});
+      }
+       const result = await userCollection.insertOne(newUser);
       res.send(result);
     })
 
@@ -110,6 +143,11 @@ async function run() {
     app.get('/class', async (req, res) => {
       const result = await classCollection.find().toArray();
       res.send(result);
+    })
+
+    app.get('/class/popular', async (req, res)=>{
+      const result = await classCollection.find().sort({enrolled: -1}).toArray();
+      res.send(result)
     })
 
     app.get('/class/instructor/:email', async (req, res) => {
